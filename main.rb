@@ -1,6 +1,6 @@
 # Enumerable Module extension
 module Enumerable
-  alias_method :my_reduce, :my_inject
+  alias my_reduce my_inject
 
   def my_each
     i = 0
@@ -58,13 +58,22 @@ module Enumerable
     count
   end
 
-  def my_map
-    p 'soy my map'
+  def my_map(proc = nil)
+    return self if proc.nil? && !block_given?
+
+    my_inject([]) do |new_array, i|
+      next_value = proc.nil? ? yield(i) : proc.call(i)
+      new_array << next_value
+    end
   end
 end
 
+# ***** Variables *****
 # irb(main):030:0> numbers
 # => [1, 2, 3, 4, 5]
+# ----------------------
+# irb(main):058:0> double = Proc.new { |n| n * 2 }
+# => #<Proc:0x000055a7c5c18960@(irb):58>
 
 # ***** My Each *****
 # irb(main):031:0> numbers.each { |n| print n }
@@ -87,6 +96,12 @@ end
 # number: 4 index: 3
 # number: 5 index: 4
 # => [1, 2, 3, 4, 5]
+
+# ***** My Inject *****
+# irb(main):056:0> numbers.inject { |mul, n| mul * n }
+# => 120
+# irb(main):057:0> numbers.my_inject { |mul, n| mul * n }
+# => 120
 
 # ***** My Reduce *****
 # irb(main):007:0> numbers.reduce { |sum, n| sum + n }
@@ -150,3 +165,13 @@ end
 # => 3
 
 # ***** My Map *****
+# irb(main):088:0> numbers.my_map
+# => [1, 2, 3, 4, 5]
+# irb(main):092:0> numbers.my_map(&double)
+# => [2, 4, 6, 8, 10]
+# irb(main):089:0> numbers.my_map(double)
+# => [2, 4, 6, 8, 10]
+# irb(main):090:0> numbers.my_map { |n| n * 2 }
+# => [2, 4, 6, 8, 10]
+# irb(main):091:0> numbers.my_map(double) { |n| n * 3 }
+# => [2, 4, 6, 8, 10]
