@@ -1,6 +1,5 @@
 # Enumerable Module extension
 module Enumerable
-  # alias my_reduce my_inject
 
   def my_each
     i = 0
@@ -28,6 +27,7 @@ module Enumerable
     end
     carry
   end
+  alias my_reduce my_inject
 
   def my_select
     selected = []
